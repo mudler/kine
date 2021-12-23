@@ -14,6 +14,7 @@ import (
 	"github.com/k3s-io/kine/pkg/drivers/sqlite"
 	"github.com/k3s-io/kine/pkg/server"
 	"github.com/k3s-io/kine/pkg/tls"
+	"github.com/k3s-io/kine/pkg/drivers/edgevpn"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/soheilhy/cmux"
@@ -30,6 +31,7 @@ const (
 	ETCDBackend     = "etcd3"
 	MySQLBackend    = "mysql"
 	PostgresBackend = "postgres"
+	EdgeVPNBackend  = "edgevpn"
 )
 
 type Config struct {
@@ -233,6 +235,8 @@ func getKineStorageBackend(ctx context.Context, driver, dsn string, cfg Config) 
 		backend, err = pgsql.New(ctx, dsn, cfg.BackendTLSConfig, cfg.ConnectionPoolConfig)
 	case MySQLBackend:
 		backend, err = mysql.New(ctx, dsn, cfg.BackendTLSConfig, cfg.ConnectionPoolConfig)
+	case EdgeVPNBackend:
+		backend, err = edgevpn.New(ctx, dsn)
 	default:
 		return false, nil, fmt.Errorf("storage backend is not defined")
 	}
